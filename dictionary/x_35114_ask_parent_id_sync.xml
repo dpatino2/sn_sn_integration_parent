@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database>
+    <element label="ID Sync" max_length="40" name="x_35114_ask_parent_id_sync" type="collection">
+        <element label="External ID" mandatory="true" max_length="32" name="external_id" type="string"/>
+        <element label="Instance" mandatory="true" max_length="100" name="instance" type="string"/>
+        <element label="Local ID" mandatory="true" max_length="32" name="local_id" type="string"/>
+        <element default="javascript:global.getNextObjNumberPadded();" display="true" label="Number" max_length="40" name="number" type="string"/>
+    </element>
+</database>

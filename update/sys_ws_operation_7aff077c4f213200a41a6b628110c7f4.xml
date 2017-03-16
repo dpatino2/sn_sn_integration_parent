@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_ws_operation">
+    <sys_ws_operation action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <consumes>application/json</consumes>
+        <consumes_customized>false</consumes_customized>
+        <default_operation_uri>/api/x_35114_ask_parent/parent/synctask</default_operation_uri>
+        <enforce_acl/>
+        <http_method>POST</http_method>
+        <name>Sync Task</name>
+        <operation_script><![CDATA[(function process(/*RESTAPIRequest*/ request, /*RESTAPIResponse*/ response) {
+	
+	var table = request.queryParams.table;
+	var id = request.queryParams.id;
+	var instance = request.getHeader('instance');
+	var body = request.body.data;
+	var result, status;
+	
+	//Search for existing record
+	var grSyncID = new GlideRecord("x_35114_ask_parent_id_sync");
+	grSyncID.addQuery("external_id", id);
+	grSyncID.addQuery("instance", instance);
+	grSyncID.query();
+	
+	if(grSyncID.next()) {
+		result = _updateRecord(grSyncID.getValue('local_id'));
+	} else {
+		result = _createRecord();
+	}
+	
+	response.setStatus(201);
+	response.setBody({result: 'success'});
+	
+	function _updateRecord(taskID){
+		gs.info('DEBUG >> Sync Record Found: ' + grSyncID.number);
+		var gr = new GlideRecord(table);
+		gr.get(taskID);
+		
+		for(var i in body){
+			gr.setValue(i,body[i]);
+		}
+		gr.update();
+	}
+	
+	function _createRecord(){
+		
+		var gr = new GlideRecord(table);
+		gr.initialize();
+				
+		for(var i in body){
+			gr.setValue(i,body[i]);
+		}
+		
+		_createSyncRecord(gr.insert());
+		
+	}
+	
+	function _createSyncRecord(newID){
+		var gr = new GlideRecord('x_35114_ask_parent_id_sync');
+		gr.initialize();
+		gr.setValue('local_id', newID);
+		gr.setValue('external_id',id);
+		gr.setValue('instance',instance);
+		
+		gr.insert();
+	}
+	
+	
+})(request, response);]]></operation_script>
+        <operation_uri>/api/x_35114_ask_parent/v1/parent/synctask</operation_uri>
+        <produces>application/json</produces>
+        <produces_customized>false</produces_customized>
+        <relative_path>/synctask</relative_path>
+        <request_example/>
+        <requires_acl_authorization>false</requires_acl_authorization>
+        <requires_authentication>true</requires_authentication>
+        <short_description/>
+        <sys_class_name>sys_ws_operation</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2017-03-14 19:02:12</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>7aff077c4f213200a41a6b628110c7f4</sys_id>
+        <sys_mod_count>35</sys_mod_count>
+        <sys_name>Sync Task</sys_name>
+        <sys_package display_value="ASK Parent" source="x_35114_ask_parent">e9af83304f213200a41a6b628110c7ee</sys_package>
+        <sys_policy/>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="ASK Parent">e9af83304f213200a41a6b628110c7ee</sys_scope>
+        <sys_update_name>sys_ws_operation_7aff077c4f213200a41a6b628110c7f4</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2017-03-15 22:11:25</sys_updated_on>
+        <web_service_definition display_value="ASK Parent Task">03bfc37c4f213200a41a6b628110c74f</web_service_definition>
+        <web_service_version display_value="v1">6f32bfb44f613200a41a6b628110c784</web_service_version>
+    </sys_ws_operation>
+</record_update>
